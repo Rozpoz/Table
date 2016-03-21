@@ -1,82 +1,42 @@
-var noble = require('noble');
-var deviceInformationService;
-var charValue;
-var canRead = false;
-var net = require('net');
-var PORT = 7002;
-var HOST = '127.0.0.1';
-//Communication...
+function asyncLoop(iterations, func, callback) {
+    var index = 0;
+    var done = false;
+    var loop = {
+        next: function() {
+            if (done) {
+                return;
+            }
+            if (index < iterations) {
+                index++;
+                func(loop);
+            } else {
+                done = true;
+                callback();
+            }
+        },
+        iteration: function() {
+            return index - 1;
+        },
+        break: function() {
+            done = true;
+            callback();
+        }
+    };
+    loop.next();
+    return loop;
+}
 
-var dgram = require('dgram');
-var client = dgram.createSocket('udp4');
-var message = new Buffer(" 6 10 11 8");
-
-
-client.send(message, 0, message.length, PORT, HOST, function(err, bytes) {
-    if (err) throw err;
-    console.log('UDP message sent to ' + HOST + ':' + PORT);
-    client.close();
-});
-
-var data1;
-
-//Scan for bluetooth devices 
-noble.on('stateChange', function(state) {
-    if (state === 'poweredOn') {
-        noble.startScanning();
-        console.log('startScanning');
-    } else {
-        noble.stopScanning();
-        console.log('stopScanning');
-    }
-});
-
-var characteristicsArray = [];
-//Locate specific bluetooth device w/ UUID & Services 
-noble.on('discover', function(peripheral) {
-    if (peripheral.uuid == "f063d304f26e4a2b88acd731d8b2e813") {
-        console.log('Found device with local name: ' + peripheral.advertisement.localName);
-        // console.log('advertising the following service uuid\'s: ' + peripheral.advertisement.serviceUuids);
-        peripheral.connect(function(error) {
-            console.log('connected to peripheral: ' + peripheral.uuid);
-            peripheral.discoverServices(null, function(error, services) {
-                console.log(services);
-                //  console.log('discovered the following services:');
-                for (var i in services) {
-                    console.log('  ' + i + ' uuid: ' + services[i].uuid);
-                    //This is the unique identifier for the device I'm looking
-                    //There will ultimately be 7 of these devices found 
-                    if (services[i].uuid == "a495ff20c5b14b44b5121370f02d74de") {
-                        deviceInformationService = services[i];
-
-                        var characteristicUUIDs = services[i]._noble._characteristics;
-                        console.log(characteristicUUIDs);
-                        // characteristicsArray.push(characteristicUUIDs);
-                        // console.log(characteristicsArray);
-
-                        deviceInformationService.discoverCharacteristics(null, function(error, characteristics) {
-                            console.log('discovered the following characteristics:');
-                            charValue = characteristics[0];
-
-
-                            //   setInterval(function() {
-                            charValue.read(function(error, data, finished, isNotification) {
-                                // data is a buffer
-                                // console.log('Char Value' + JSON.stringify(data));
-                                //console.log(data.length);
-                                console.log('Data: ' + data[0]);
-                                client.send("wrote data");
-                                console.log("wrote data");
-                                // canRead = true;
-                                // console.log('Char Value TYpe' + typeof(data));
-                                //  }
-                            });
-                            //  }, 300);
-                        })
-                    }
-                }
-            });
-        });
-    } 
-});
-//});
+function someFunction(a, b, callback) {
+    console.log('Hey doing some stuff!');
+    callback();
+}
+asyncLoop(10, function(loop) {
+        someFunction(1, 2, function(result) {
+            // log the iteration
+            console.log(loop.iteration());
+            // Okay, for cycle could continue
+            loop.next();
+        })
+    },
+    function() { console.log('cycle ended') }
+);
