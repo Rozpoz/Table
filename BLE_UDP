@@ -1,0 +1,73 @@
+var noble = require('noble');
+var deviceInformationService;
+var charValue;
+var canRead = false;
+var net = require('net');
+var PORT = 7002;
+var HOST = '127.0.0.1';
+//Communication...
+var device1 = "**********";
+var device2 = "**********";
+
+
+var dgram = require('dgram');
+var client = dgram.createSocket('udp4');
+
+
+
+
+var data1;
+
+//Scan for bluetooth devices 
+noble.on('stateChange', function(state) {
+    if (state === 'poweredOn') {
+        noble.startScanning();
+        console.log('startScanning');
+    } else {
+        noble.stopScanning();
+        console.log('stopScanning');
+    }
+});
+
+noble.on('discover', function(peripheral) {
+    if (peripheral.uuid == device1) {
+        console.log('Found device with local name: ' + peripheral.advertisement.localName);
+        peripheral.connect(function(error) {
+            console.log('connected to peripheral: ' + peripheral.uuid);
+            peripheral.discoverServices(null, function(error, services) {
+                deviceInformationService = services[3];
+                deviceInformationService.discoverCharacteristics(null, function(error, characteristics) {
+                    charValue = characteristics[0];
+
+                    charValue.on('read', function(data, isNotification) {
+
+                        console.log(data[0]);
+                    });
+                    charValue.notify(true, function(error) {
+
+                    });
+
+
+                });
+
+            })
+        });
+    }
+});
+
+
+
+
+//var message = new Buffer(" 6 10 11 8");
+var a = 8;
+var b = 2;
+var c = 5;
+var d = 6;
+var message = a + " " + b + " " + c + " " + d;
+var sMessage = JSON.stringify(message);
+
+client.send(message, 0, message.length, PORT, HOST, function(err, bytes) {
+    if (err) throw err;
+    console.log('UDP message sent to ' + HOST + ':' + PORT);
+    client.close();
+});
