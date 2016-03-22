@@ -6,15 +6,17 @@ var net = require('net');
 var PORT = 7002;
 var HOST = '127.0.0.1';
 //Communication...
-var device1 = "**********";
-var device2 = "**********";
+var device1 = "***";
+var device2 = "***";
+var a = 0;
+var b = 0;
+var c = 0;
+var d = 0;
+
 
 
 var dgram = require('dgram');
 var client = dgram.createSocket('udp4');
-
-
-
 
 var data1;
 
@@ -40,8 +42,8 @@ noble.on('discover', function(peripheral) {
                     charValue = characteristics[0];
 
                     charValue.on('read', function(data, isNotification) {
-
-                        console.log(data[0]);
+                        a = data[0];
+                       
                     });
                     charValue.notify(true, function(error) {
 
@@ -56,18 +58,17 @@ noble.on('discover', function(peripheral) {
 });
 
 
+setInterval(function() {
+  //  console.log(a);
+if(a>6){
+    a = 1; 
+}
+else{a = 0;}
 
-
-//var message = new Buffer(" 6 10 11 8");
-var a = 8;
-var b = 2;
-var c = 5;
-var d = 6;
 var message = a + " " + b + " " + c + " " + d;
 var sMessage = JSON.stringify(message);
 
 client.send(message, 0, message.length, PORT, HOST, function(err, bytes) {
-    if (err) throw err;
-    console.log('UDP message sent to ' + HOST + ':' + PORT);
-    client.close();
+ 
 });
+}, 200);
