@@ -9,8 +9,8 @@ var net = require('net');
 var PORT = 7002;
 var HOST = '127.0.0.1';
 //Communication...
-var device1 = "f063d304f26e4a2b88acd731d8b2e813";
-var device2 = "02c73e03aa5d4edd815a48b8a90f26ab";
+var device1 = "***";
+var device2 = "***";
 var a = 0;
 var b = 0;
 var c = 0;
