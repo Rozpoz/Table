@@ -1,22 +1,30 @@
 var noble = require('noble');
-var deviceInformationService;
-var charValue;
+var deviceInformationService1;
+var deviceInformationService2;
+var charValue1;
+var charValue2;
+
 var canRead = false;
 var net = require('net');
 var PORT = 7002;
 var HOST = '127.0.0.1';
 //Communication...
-var device1 = "***";
-var device2 = "***";
+var device1 = "f063d304f26e4a2b88acd731d8b2e813";
+var device2 = "02c73e03aa5d4edd815a48b8a90f26ab";
 var a = 0;
 var b = 0;
 var c = 0;
 var d = 0;
-
+var triggerA = false;
+var triggerB = false;
+//var allowDuplicates = true; // default: false
 
 
 var dgram = require('dgram');
 var client = dgram.createSocket('udp4');
+
+
+
 
 var data1;
 
@@ -31,7 +39,10 @@ noble.on('stateChange', function(state) {
     }
 });
 
+
+///Device 1
 noble.on('discover', function(peripheral) {
+    ///
     if (peripheral.uuid == device1) {
         console.log('Found device with local name: ' + peripheral.advertisement.localName);
         peripheral.connect(function(error) {
@@ -39,13 +50,13 @@ noble.on('discover', function(peripheral) {
             peripheral.discoverServices(null, function(error, services) {
                 deviceInformationService = services[3];
                 deviceInformationService.discoverCharacteristics(null, function(error, characteristics) {
-                    charValue = characteristics[0];
+                    charValue1 = characteristics[0];
 
-                    charValue.on('read', function(data, isNotification) {
+                    charValue1.on('read', function(data, isNotification) {
                         a = data[0];
-                       
+                       console.log("a = " + a);
                     });
-                    charValue.notify(true, function(error) {
+                    charValue1.notify(true, function(error) {
 
                     });
 
@@ -54,16 +65,58 @@ noble.on('discover', function(peripheral) {
 
             })
         });
-    }
+    }; 
+
+    if (peripheral.uuid == device2) {
+        console.log('Found device with local name: ' + peripheral.advertisement.localName);
+        peripheral.connect(function(error) {
+            console.log('connected to peripheral: ' + peripheral.uuid);
+            peripheral.discoverServices(null, function(error, services) {
+                deviceInformationService2 = services[3];
+                deviceInformationService2.discoverCharacteristics(null, function(error, characteristics) {
+                    charValue2 = characteristics[0];
+
+                    charValue2.on('read', function(data, isNotification) {
+                        b = data[0];
+                       console.log("b = " + b);
+                    });
+                    charValue2.notify(true, function(error) {
+
+                    });
+
+
+                });
+
+            })
+        });
+    }; 
+    
 });
 
-
 setInterval(function() {
-  //  console.log(a);
-if(a>6){
+   
+if(a>20 && triggerA == false){
     a = 1; 
+    triggerONE = true;
+}
+
+if(a>20 && triggerA==true){
+	a = 2;
 }
 else{a = 0;}
+///////////////B
+if(b>20 && triggerB == false){
+    b = 1; 
+    triggerONE = true;
+}
+
+if(b>20 && triggerB==true){
+	b = 2;
+}
+else{b = 0;}
+
+
+//console.log(a);
 
 var message = a + " " + b + " " + c + " " + d;
 var sMessage = JSON.stringify(message);
