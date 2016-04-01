@@ -1,23 +1,24 @@
 var noble = require('noble');
-var deviceInformationService1;
-var deviceInformationService2;
-var charValue1;
-var charValue2;
 
 var canRead = false;
 var net = require('net');
 var PORT = 7002;
-var HOST = '127.0.0.1';
+var HOST = '127.0.0.1'; 
 //Communication...
 var device1 = "***";
 var device2 = "***";
-var a = 0;
-var b = 0;
-var c = 0;
-var d = 0;
-var triggerA = false;
-var triggerB = false;
-//var allowDuplicates = true; // default: false
+var device3 = "***";
+var device4 = "***";
+var device6 = "***";
+var device7 = "**";
+var gRead = 0;
+var fRead = 0;
+var dRead = 0;
+var cRead = 0;
+var bRead = 0;
+var aRead = 0;
+
+
 
 
 var dgram = require('dgram');
@@ -26,7 +27,6 @@ var client = dgram.createSocket('udp4');
 
 
 
-var data1;
 
 //Scan for bluetooth devices 
 noble.on('stateChange', function(state) {
@@ -48,15 +48,15 @@ noble.on('discover', function(peripheral) {
         peripheral.connect(function(error) {
             console.log('connected to peripheral: ' + peripheral.uuid);
             peripheral.discoverServices(null, function(error, services) {
-                deviceInformationService = services[3];
+                var deviceInformationService = services[3];
                 deviceInformationService.discoverCharacteristics(null, function(error, characteristics) {
-                    charValue1 = characteristics[0];
+                    var charValue = characteristics[0];
 
-                    charValue1.on('read', function(data, isNotification) {
-                        a = data[0];
-                       console.log("a = " + a);
+                    charValue.on('read', function(data, isNotification) {
+                        aRead = data[0];
+                     //   console.log("a read = " + aRead);
                     });
-                    charValue1.notify(true, function(error) {
+                    charValue.notify(true, function(error) {
 
                     });
 
@@ -65,22 +65,22 @@ noble.on('discover', function(peripheral) {
 
             })
         });
-    }; 
+    };
 
     if (peripheral.uuid == device2) {
         console.log('Found device with local name: ' + peripheral.advertisement.localName);
         peripheral.connect(function(error) {
             console.log('connected to peripheral: ' + peripheral.uuid);
             peripheral.discoverServices(null, function(error, services) {
-                deviceInformationService2 = services[3];
-                deviceInformationService2.discoverCharacteristics(null, function(error, characteristics) {
-                    charValue2 = characteristics[0];
+                var deviceInformationService = services[3];
+                deviceInformationService.discoverCharacteristics(null, function(error, characteristics) {
+                    var charValue = characteristics[0];
 
-                    charValue2.on('read', function(data, isNotification) {
-                        b = data[0];
-                       console.log("b = " + b);
+                    charValue.on('read', function(data, isNotification) {
+                        bRead = data[0];
+                        //  console.log(bRead);
                     });
-                    charValue2.notify(true, function(error) {
+                    charValue.notify(true, function(error) {
 
                     });
 
@@ -89,39 +89,118 @@ noble.on('discover', function(peripheral) {
 
             })
         });
-    }; 
-    
+    };
+
+    if (peripheral.uuid == device3) {
+        console.log('Found device with local name: ' + peripheral.advertisement.localName);
+        peripheral.connect(function(error) {
+            console.log('connected to peripheral: ' + peripheral.uuid);
+            peripheral.discoverServices(null, function(error, services) {
+                var deviceInformationService = services[3];
+                deviceInformationService.discoverCharacteristics(null, function(error, characteristics) {
+                    var charValue = characteristics[0];
+
+                    charValue.on('read', function(data, isNotification) {
+                        cRead = data[0];
+                        // console.log("c = " + cRead);
+                    });
+                    charValue.notify(true, function(error) {
+
+                    });
+
+
+                });
+
+            })
+        });
+    };
+    if (peripheral.uuid == device4) {
+        console.log('Found device with local name: ' + peripheral.advertisement.localName);
+        peripheral.connect(function(error) {
+            console.log('connected to peripheral: ' + peripheral.uuid);
+            peripheral.discoverServices(null, function(error, services) {
+                var deviceInformationService = services[3];
+                deviceInformationService.discoverCharacteristics(null, function(error, characteristics) {
+                    var charValue = characteristics[0];
+
+                    charValue.on('read', function(data, isNotification) {
+                        dRead = data[0];
+                        //    console.log("d= " + dRead);
+                    });
+                    charValue.notify(true, function(error) {
+
+                    });
+
+
+                });
+
+            })
+        });
+    };
+    /// ENTIRE NOBLE
+    if (peripheral.uuid == device6) {
+        console.log('Found device with local name: ' + peripheral.advertisement.localName);
+        peripheral.connect(function(error) {
+            console.log('connected to peripheral: ' + peripheral.uuid);
+            peripheral.discoverServices(null, function(error, services) {
+                var deviceInformationService = services[3];
+                deviceInformationService.discoverCharacteristics(null, function(error, characteristics) {
+                    var charValue = characteristics[0];
+
+                    charValue.on('read', function(data, isNotification) {
+                        fRead = data[0];
+                        //    console.log("d= " + dRead);
+                    });
+                    charValue.notify(true, function(error) {
+
+                    });
+
+
+                });
+
+            })
+        });
+    };
+    /// ENTIRE NOBLE    
+    if (peripheral.uuid == device7) {
+        console.log('Found device with local name: ' + peripheral.advertisement.localName);
+        peripheral.connect(function(error) {
+            console.log('connected to peripheral: ' + peripheral.uuid);
+            peripheral.discoverServices(null, function(error, services) {
+                var deviceInformationService = services[3];
+                deviceInformationService.discoverCharacteristics(null, function(error, characteristics) {
+                    var charValue = characteristics[0];
+
+                    charValue.on('read', function(data, isNotification) {
+                        gRead = data[0];
+                      //  console.log("d= " + dRead);
+                    });
+                    charValue.notify(true, function(error) {
+
+                    });
+
+
+                });
+
+            })
+        });
+    };
+    /// ENTIRE NOBLE        
 });
+
+
+
+
 
 setInterval(function() {
-   
-if(a>20 && triggerA == false){
-    a = 1; 
-    triggerONE = true;
-}
 
-if(a>20 && triggerA==true){
-	a = 2;
-}
-else{a = 0;}
-///////////////B
-if(b>20 && triggerB == false){
-    b = 1; 
-    triggerONE = true;
-}
-
-if(b>20 && triggerB==true){
-	b = 2;
-}
-else{b = 0;}
-
-
-//console.log(a);
-
-var message = a + " " + b + " " + c + " " + d;
-var sMessage = JSON.stringify(message);
-
-client.send(message, 0, message.length, PORT, HOST, function(err, bytes) {
  
-});
-}, 200);
+//console.log(cRead);
+   var message = aRead + " " + bRead + " " + cRead + " " + dRead + " " + fRead + " " + gRead;
+    console.log(message);
+    var sMessage = JSON.stringify(message);
+
+    client.send(message, 0, message.length, PORT, HOST, function(err, bytes) {
+
+    });
+}, 5);
